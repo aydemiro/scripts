@@ -20,9 +20,9 @@ parser.add_argument("-o", "--output", help="Output file",
 parser.add_argument("-z", "--compression", choices=[None, "bz2", "gzip"],
                     default=None)
 parser.add_argument("-f", "--from", help="from key",
-                    default="transcript_id", required=True)
+                    default="transcript_id")
 parser.add_argument("-t", "--to", help="to key",
-                    default="gene_id", required=True)
+                    default="gene_id")
 
 
 args = vars(parser.parse_args())
