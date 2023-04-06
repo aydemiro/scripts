@@ -19,12 +19,18 @@ parser.add_argument("-o", "--output", help="Output file",
                     required=True)
 parser.add_argument("-z", "--compression", choices=[None, "bz2", "gzip"],
                     default=None)
+parser.add_argument("-f", "--from", help="from key",
+                    default="transcript_id", required=True)
+parser.add_argument("-t", "--to", help="to key",
+                    default="gene_id", required=True)
 
 
 args = vars(parser.parse_args())
 gtf_file = args["gtf"]
 compression = args["compression"]
 output_file = args["output"]
+from_key = args["from"]
+to_key = args["to"]
 
 # Read gtf file using GTF2_Reader from plastid
 if compression is None:
@@ -37,20 +43,19 @@ else:
     raise OSError(
         "Provided compression '{}' is not supported.".format(
             compression))
-                    
+
 # Populate a transcript to gene dictionary from the gtf
 tx = {}
 for feat in anno:
     if feat.attr["type"] == "transcript":
-        tx[feat.attr["transcript_id"]] = {
-            "gene_id": feat.attr["gene_id"]}
+        tx[feat.attr[from_key]] = {
+            to_key: feat.attr[to_key]}
 
 # create a dataframe from the dict
 tx_df = pd.DataFrame.from_dict(
     tx, orient="index").reset_index().rename(
-        columns={"index": "transcript_id"})
+        columns={"index": from_key})
 
 # save dataframe to file
-tx_df[["transcript_id", "gene_id"]].to_csv(
+tx_df[[from_key, to_key]].to_csv(
     output_file, index=False)
-
