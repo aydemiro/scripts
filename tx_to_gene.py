@@ -53,7 +53,7 @@ for feat in anno:
     if feat.attr["type"] == "transcript":
         tx[feat.attr[from_key]] = {}
         for tk in to_key:
-            tx[feat.attr[from_key]][tk]: feat.attr[tk]
+            tx[feat.attr[from_key]][tk] = feat.attr[tk]
 
 # create a dataframe from the dict
 tx_df = pd.DataFrame.from_dict(
