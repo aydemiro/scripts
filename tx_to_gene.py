@@ -1,15 +1,18 @@
 """
 Author: Ozkan Aydemir
-Description: Simple script to create transcript ID to gene ID table from a gtf file.
-For use on ghpcc cluster with plastid loaded either as a module or conda env.
+Description: Simple script to create transcript ID to gene ID table from a gtf
+file. For use on ghpcc cluster with plastid loaded either as a module or conda
+env.
 """
 
 import pandas as pd
 from plastid import GTF2_Reader
-import bz2, gzip
+import bz2
+import gzip
 import warnings
-warnings.filterwarnings('ignore')
 import argparse
+
+warnings.filterwarnings('ignore')
 
 # Parse command line arguments
 parser = argparse.ArgumentParser()
@@ -22,7 +25,7 @@ parser.add_argument("-z", "--compression", choices=[None, "bz2", "gzip"],
 parser.add_argument("-f", "--from", help="from key",
                     default="transcript_id")
 parser.add_argument("-t", "--to", help="to key",
-                    default="gene_id")
+                    default="gene_id", nargs="+")
 
 
 args = vars(parser.parse_args())
@@ -48,8 +51,9 @@ else:
 tx = {}
 for feat in anno:
     if feat.attr["type"] == "transcript":
-        tx[feat.attr[from_key]] = {
-            to_key: feat.attr[to_key]}
+        tx[feat.attr[from_key]] = {}
+        for tk in to_key:
+            tx[feat.attr[from_key]][tk]: feat.attr[tk]
 
 # create a dataframe from the dict
 tx_df = pd.DataFrame.from_dict(
@@ -57,5 +61,5 @@ tx_df = pd.DataFrame.from_dict(
         columns={"index": from_key})
 
 # save dataframe to file
-tx_df[[from_key, to_key]].to_csv(
+tx_df[[from_key] + to_key].to_csv(
     output_file, index=False)
