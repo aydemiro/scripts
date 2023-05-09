@@ -61,5 +61,5 @@ tx_df = pd.DataFrame.from_dict(
         columns={"index": from_key})
 
 # save dataframe to file
-tx_df[[from_key] + to_key].to_csv(
+tx_df.to_csv(
     output_file, index=False)
